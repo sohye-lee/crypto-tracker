@@ -31,7 +31,8 @@ const Coin = styled.li`
   transition: all ease 300ms;
   a {
     transition: all ease 300ms;
-    display: block;
+    display: flex;
+    align-items: center;
   }
   &:hover {
     a {
@@ -48,11 +49,16 @@ const Title = styled.h1`
   width: 100%;
 `;
 
-const CoinWrapper = styled.div`
+const PaginationWrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   font-size: 18px;
   font-weight: 500;
+
+  p {
+    margin: 5px;
+  }
 `;
 
 const Image = styled.img`
@@ -75,11 +81,13 @@ interface CoinInterface {
 const Coins = () => {
   const [coins, setCoins] = useState<CoinInterface[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState(1);
+
   useEffect(() => {
     (async () => {
       const response = await fetch('https://api.coinpaprika.com/v1/coins');
       const json = await response.json();
-      setCoins(json.slice(0, 10));
+      setCoins(json.slice(0, 100));
       setLoading(false);
     })();
   }, []);
@@ -95,18 +103,24 @@ const Coins = () => {
         ) : (
           coins.map((coin) => (
             <Coin key={coin.id}>
-              <Link to={`/${coin.id}`}>
-                <CoinWrapper>
-                  <Image
-                    src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
-                    alt={coin.name}
-                  />
-                  {coin.name} &rarr;
-                </CoinWrapper>
+              <Link
+                to={{
+                  pathname: `/${coin.id}`,
+                  state: { name: coin.name },
+                }}
+              >
+                <Image
+                  src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
+                  alt={coin.name}
+                />
+                {coin.name} &rarr;
               </Link>
             </Coin>
           ))
         )}
+        <PaginationWrapper>
+          
+        </PaginationWrapper>
       </CoinsList>
     </Container>
   );
